@@ -4,7 +4,6 @@ const auth = require('../middleware/auth')
 const jwt = require('jsonwebtoken')
 const userRouter = express.Router()
 const bcrypt = require('bcrypt')
-const saltRounds = 10
 
 //Get user
 userRouter.get('/', auth, (req,res) => {
@@ -30,7 +29,7 @@ userRouter.get('/', auth, (req,res) => {
 
 //Login
 userRouter.put('/', (req,res) => {
-    let userData;
+    let userData
     userApi.getOne({email: req.body.email})
     .then((data) => {
         userData = data
@@ -66,7 +65,7 @@ userRouter.post('/', (req,res) => {
     }  else if (!req.body.password) {
         res.status(422).send({message: 'Password not included with the request'})
     }
-    bcrypt.hash(req.body.password, saltRounds).then((hash) => {
+    bcrypt.hash(req.body.password, 10).then((hash) => {
         return userApi.insert({
             ...req.body,
             password: hash
