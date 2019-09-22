@@ -29,7 +29,7 @@ userRouter.get('/', auth, (req,res) => {
 
 //Login
 userRouter.put('/', (req,res) => {
-    let userData;
+    let userData
     userApi.getOne({email: req.body.email})
     .then((data) => {
         userData = data
