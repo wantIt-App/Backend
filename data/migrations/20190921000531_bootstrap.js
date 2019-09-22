@@ -16,6 +16,9 @@ exports.up = function(knex) {
     .createTable('lists', table => {
         table.increments()
       table.string('name')
+        .notNull()
+      table.string('description')
+        .notNull()
       table.integer('owner_id')
         .references('id')
         .inTable('users')
@@ -39,7 +42,7 @@ exports.up = function(knex) {
             .notNull()
             .onDelete('RESTRICT')
             .onUpdate('CASCADE')
-        table.boolean('accepted')
+        table.boolean('rejected')
             .defaultTo(false)
         table.datetime('created_at')
             .defaultTo(knex.fn.now())
@@ -92,8 +95,8 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   knex.schema.dropTable('item_comments')
-    .dropTable('want_its')
-    .dropTable('items')
-    .dropTable('lists')
-    .dropTable('users')
+  knex.schema.dropTable('want_its')
+  knex.schema.dropTable('items')
+  knex.schema.dropTable('lists')
+  knex.schema.dropTable('users')
 };
