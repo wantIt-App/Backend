@@ -6,6 +6,7 @@ const saltRounds = 10
 
 //Get user
 userRouter.get('/', (req,res) => {
+    console.log(req.session, 'req.session in endpoint')
     if(req.session.user !== undefined) {
         userApi.getOne({
             id: req.session.user

@@ -22,6 +22,7 @@ server.use(session({
 
 //Auth middleware
 const auth = (req,res,next) => {
+  console.log(req.session, 'session in middleware')
   if(req.session.user === undefined) {
     res.status(400).send({message: 'You must be signed in'})
   } else {
@@ -37,7 +38,7 @@ server.use('/item', auth, itemRouter)
 
 server.get('/', (req, res) => {
   console.log(req.session)
-    res.status(200).send({message: 'I am alive'})
+  res.status(200).send({message: 'I am alive'})
 })
 
 server.listen(process.env.PORT, ()=>console.log(`Server started at port ${process.env.PORT}`))
