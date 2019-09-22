@@ -36,7 +36,7 @@ server.use('/user', userRouter)
 server.use('/list', auth, listRouter)
 server.use('/item', auth, itemRouter)
 
-server.get('/', (req, res) => {
+server.get('/', auth, (req, res) => {
   console.log(req.session)
   res.status(200).send({message: 'I am alive'})
 })
