@@ -14,7 +14,7 @@ server.use(session({
   cookie: {
     secure: true,
     httpOnly: true,
-    domain: process.env.COOKIE_DOMAIN,
+    //domain: process.env.COOKIE_DOMAIN,
     path: '/',
     expires: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
   }
