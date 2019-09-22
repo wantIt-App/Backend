@@ -1,19 +1,24 @@
 const express = require('express')
 const userApi = require('../apis/db/user')
+const auth = require('../middleware/auth')
+const jwt = require('jsonwebtoken')
 const userRouter = express.Router()
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 
 //Get user
-userRouter.get('/', (req,res) => {
-    console.log(req.session, 'req.session in endpoint')
-    if(req.session.user !== undefined) {
+userRouter.get('/', auth, (req,res) => {
+    if(req.user !== undefined) {
         userApi.getOne({
-            id: req.session.user
+            id: req.user.id
         })
         .then((data) => {
             delete data.password
-            res.status(200).send({data})
+            res.status(200).send({
+                data: {                
+                    user: data
+                }
+            })
         })
         .catch((err) => {
             res.status(500).send({message: "Internal Server Error"})
@@ -34,11 +39,16 @@ userRouter.put('/', (req,res) => {
     .then((data) => {
         if(data) {
             delete userData.password
-            //set user id in session cookie
-            req.session = {
-                user: data.id
-            }
-            res.status(200).send({data: userData})
+            const token = jwt.sign({
+                id: data.id
+              }, process.env.SECRET_KEY, { expiresIn: '1h' })
+            res.status(200).send({
+                data: {
+                    user: userData,
+                    token
+                }
+            })
+            res.status(200).send()
         } else {
             res.status(422).send({message: "Invalid credentials"})
         }
@@ -65,11 +75,15 @@ userRouter.post('/', (req,res) => {
     .then((data) => {
         //can't chain first() onto a knex insert
         data = data[0]
-        //set user id in session cookie
-        req.session = {
-            user: data.id
-        }
-        res.status(200).send({data})
+        const token = jwt.sign({
+            id: data.id
+          }, process.env.SECRET_KEY, { expiresIn: '1h' })
+        res.status(200).send({
+            data: {
+                user: data,
+                token
+            }
+        })
     })
     .catch(err => {
         if(err.message.includes('users_username_unique')) {
