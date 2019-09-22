@@ -12,11 +12,11 @@ server.use(session({
   name: 'session',
   keys: [process.env.SECRET_KEY],
   cookie: {
-    secure: true,
-    httpOnly: true,
+    //secure: true,
+    //httpOnly: true,
     //domain: process.env.COOKIE_DOMAIN,
     path: '/',
-    expires: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+    expires: new Date(Date.now() + 2 * 60 * 60 * 1000) // 2 hour
   }
 }))
 
@@ -37,7 +37,7 @@ server.use('/list', auth, listRouter)
 server.use('/item', auth, itemRouter)
 
 server.get('/', auth, (req, res) => {
-  console.log(req.session)
+  console.log(req.session, 'req.session in endpoint')
   res.status(200).send({message: 'I am alive'})
 })
 
