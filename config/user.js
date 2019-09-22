@@ -33,6 +33,10 @@ userRouter.put('/', (req,res) => {
     .then((data) => {
         if(data) {
             delete userData.password
+            //set user id in session cookie
+            req.session = {
+                user: data.id
+            }
             res.status(200).send({data: userData})
         } else {
             res.status(422).send({message: "Invalid credentials"})
