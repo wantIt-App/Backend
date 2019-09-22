@@ -7,7 +7,7 @@ const saltRounds = 10
 //Get user
 userRouter.get('/', (req,res) => {
     if(req.session.user !== undefined) {
-        userApi.get({
+        userApi.getOne({
             id: req.session.user
         })
         .then((data) => {
@@ -71,7 +71,6 @@ userRouter.post('/', (req,res) => {
         res.status(200).send({data})
     })
     .catch(err => {
-        console.log(typeof err.message)
         if(err.message.includes('users_username_unique')) {
             res.status(200).send({message: 'This username is already taken'})
         } else if(err.message.includes('users_email_unique')) {
