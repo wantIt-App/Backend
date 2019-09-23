@@ -2,10 +2,15 @@ const db = require('./global')
 
 const getMany = (filter) => {
     let parsedLists
-    return db('lists').where(filter)
+    return db('lists')
+        .where(filter)
         .then((data) => {
             parsedLists = data
-            return Promise.all(data.map(list => db('users').where({id: list.owner_id}).returning('username')))
+            return Promise.all(data.map(list => {
+                return db('users')
+                    .where({ id: list.owner_id })
+                    .returning('username')
+            }))
         })
         .then((data) => {
             return parsedLists.map((list,index) => ({
@@ -17,10 +22,19 @@ const getMany = (filter) => {
 
 const getOne = (filter) => {
     let parsedList
-    return db('lists').where(filter).first()
+    return db('lists')
+        .where(filter)
+        .first()
         .then((data) => {
-            parsedList = data
-            return db('users').where({id: parsedList.owner_id}).returning('username').first()
+            if (data) {                
+                parsedList = data
+                return db('users')
+                    .where({ id: parsedList.owner_id })
+                    .returning('username')
+                    .first()
+            } else {
+                throw new Error("The requested list does not exist")
+            }
         })
         .then((data) => {
             return {
@@ -32,10 +46,15 @@ const getOne = (filter) => {
 
 const insert = (data) => {
     let parsedList
-    return db('lists').insert(data).returning(['id', 'name', 'description', 'owner_id'])
+    return db('lists')
+        .insert(data)
+        .returning(['id', 'name', 'description', 'owner_id'])
         .then((data) => {
             parsedList = data[0]
-            return db('users').where({id:parsedList.owner_id}).returning('username').first()
+            return db('users')
+                .where({ id: parsedList.owner_id })
+                .returning('username')
+                .first()
         })
         .then((data) => {
             return {

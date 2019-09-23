@@ -56,8 +56,11 @@ exports.up = function(knex) {
             .onDelete('RESTRICT')
             .onUpdate('CASCADE')
         table.string('description')
+            .notNull()
         table.string('title')
+            .notNull()
         table.string('picture')
+            .notNull()
         table.datetime('created_at')
             .defaultTo(knex.fn.now())
     })
@@ -93,10 +96,10 @@ exports.up = function(knex) {
     })
 };
 
-exports.down = function(knex) {
-  knex.schema.dropTable('item_comments')
-  knex.schema.dropTable('want_its')
-  knex.schema.dropTable('items')
-  knex.schema.dropTable('lists')
-  knex.schema.dropTable('users')
+exports.down = function (knex) {
+    return knex.schema.dropTableIfExists('item_comments')
+        .dropTableIfExists('want_its')
+        .dropTableIfExists('items')
+        .dropTableIfExists('lists')
+        .dropTableIfExists('users')
 };
