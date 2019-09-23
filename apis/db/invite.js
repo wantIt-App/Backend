@@ -4,6 +4,6 @@ const getMany = (filter) => {
     return db('invites').where(filter)
 }
 
-modules.exports = {
+module.exports = {
     getMany
 }

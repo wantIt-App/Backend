@@ -40,7 +40,7 @@ const insert = (data) => {
         .then((data) => {
             return {
                 ...parsedList,
-                owner_username: data
+                owner_username: data.username
             }
         })
 }
