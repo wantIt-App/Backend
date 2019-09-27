@@ -5,6 +5,7 @@ const server = express()
 const userRouter = require('./config/user')
 const listRouter = require('./config/list')
 const itemRouter = require('./config/item')
+const inviteRouter = require('./config/invite')
 const auth = require('./middleware/auth')
 
 //For Picture Uploading
@@ -25,6 +26,7 @@ server.use(helmet())
 server.use('/user', userRouter)
 server.use('/list', auth, listRouter)
 server.use('/item', auth, itemRouter)
+server.use('/invite', auth, inviteRouter)
 
 server.get('/', (req, res) => {
   res.status(200).send({message: 'I am alive'})
