@@ -36,7 +36,32 @@ inviteRouter.post('/', async (req, res) => {
     }
 })
 
-//Reject list invite
-inviteRouter.put('/', (req, res) => {
-    
+//Toggle list invite state
+inviteRouter.put('/toggle', (req, res) => {
+    const input = req.body
+    //Validate Input
+    if (!input) {
+        res.status(422).send({ message: "No invite information was provided in the request" })
+    } else if (input.invite_id === undefined) {
+        res.status(422).send({ message: "No invite id was provided in the request" })
+    } else if (!Number.isInteger(input.invite_id)) {
+        res.status(422).send({ message: "Invite id must be an integer" })
+    }
+    const applicableInvite = await inviteApi.getOne({ id: input.invite_id })
+    //Make sure the user inviting other users owns the list
+    if (applicableInvite.invitee_id === req.user.id) {
+        inviteApi.update({
+            id: input.invite_id
+        }, {
+            rejected: !applicableInvite.rejected
+        })
+            .then((data) => {
+                res.status(200).send({ data: { invite: data[0] } })
+            })
+            .catch((data) => {
+                res.status(500).send({ message: "Internal Server Error" })
+            })
+    } else {
+        res.status(422).send({ message: "You are not authorize to reject or accept this invite" })
+    }
 })
