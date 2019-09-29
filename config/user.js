@@ -14,17 +14,18 @@ userRouter.get('/', auth, (req, res) => {
             id: req.user.id
         })
             .then((data) => {
-            //Sanitize user info and send it back
-            delete data.password
-            res.status(200).send({
-                data: {                
-                    user: data
-                }
+                //Sanitize user info and send it back
+                delete data.password
+                res.status(200).send({
+                    data: {                
+                        user: data
+                    }
+                })
             })
-        })
-        .catch((err) => {
-            res.status(500).send({message: "Internal Server Error"})
-        })
+            .catch((err) => {
+                console.log(err.message, 'Error @ GET /user')
+                res.status(500).send({message: "Internal Server Error"})
+            })
     } else {
         res.status(300).send({message: "You are not logged in"})
     }
@@ -45,7 +46,7 @@ userRouter.put('/', (req,res) => {
                         if (data) {
                             delete userData.password
                             const token = jwt.sign({
-                                id: data.id
+                                id: userData.id
                             }, process.env.SECRET_KEY, { expiresIn: '1h' })
                             //Respond with valid token
                             res.status(200).send({

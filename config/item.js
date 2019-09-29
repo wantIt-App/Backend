@@ -65,7 +65,7 @@ itemRouter.post('/', (req, res) => {
                 if (err.message.includes('foreign key constraint')) {
                     res.status(422).send({ message: "List id provided does not exist" })
                 } else {
-                    console.log(err, 'Error @ POST /item')
+                    console.log(err.message, 'Error @ POST /item')
                     res.status(500).send({message: "Internal Server Error"})
                 }
             })

@@ -6,9 +6,13 @@ const inviteApi = require('../apis/db/invite')
 //Get lists of signed in user
 listRouter.get('/created', (req,res) => {
     return listApi.getMany({owner_id: req.user.id})
-    .then(data => {
-        res.status(200).send({data: {lists: data}})
-    })
+        .then(data => {
+            res.status(200).send({data: {lists: data}})
+        })
+        .catch(err => {
+            console.log(err.message, 'Error @ GET /list/created')
+            res.status(500).send({ message: "Internal Server Error" })
+        })
 })
 
 //Get lists signed in user has been invited to
@@ -23,6 +27,10 @@ listRouter.get('/invited', (req, res) => {
         })
         .then(data => {
             res.status(200).send({ data: { lists: data } })
+        })
+        .catch(err => {
+            console.log(err.message, 'Error @ GET /list/invited')
+            res.status(500).send({ message: "Internal Server Error" })
         })
     }
     //If the rejected query parameter was included
@@ -59,9 +67,13 @@ listRouter.post('/', (req, res) => {
         //Hydrate input with user id as list's owner_id
         input.owner_id = req.user.id
         return listApi.insert(input)
-        .then(data => {
-            res.status(200).send({data: {lists: data}})
-        })
+            .then(data => {
+                res.status(200).send({data: {lists: data}})
+            })
+            .catch(err => {
+                console.log(err.message, 'Error @ POST /list')
+                res.status(500).send({ message: "Internal Server Error" })
+            })
     }
 })
 

@@ -29,7 +29,7 @@ exports.up = function(knex) {
         .defaultTo(knex.fn.now())
     })
     .createTable('invites', table => {
-        table.increments()
+        table.primary(['list_id', 'invitee_id']);
         table.integer('list_id')
             .references('id')
             .inTable('lists')
