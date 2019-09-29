@@ -17,27 +17,28 @@ inviteRouter.post('/', async (req, res) => {
         res.status(422).send({ message: "List id must be an integer" })
     } else if (!Number.isInteger(input.invitee_id)) {
         res.status(422).send({ message: "Invitee id must be an integer" })
-    }
-    const applicableList = await listApi.getOne({ id: input.list_id })
-    //Make sure the user inviting other users owns the list
-    if (applicableList.owner_id === req.user.id) {
-        inviteApi.insert({
-            list_id: input.list_id,
-            invitee_id: input.invitee_id
-        })
-            .then((data) => {
-                res.status(200).send({ data: { invite: data[0] } })
-            })
-            .catch((data) => {
-                res.status(500).send({message: "Internal Server Error"})
-            })
     } else {
-        res.status(422).send({ message: "You don't own this list" })
+        const applicableList = await listApi.getOne({ id: input.list_id })
+        //Make sure the user inviting other users owns the list
+        if (applicableList.owner_id === req.user.id) {
+            inviteApi.insert({
+                list_id: input.list_id,
+                invitee_id: input.invitee_id
+            })
+                .then((data) => {
+                    res.status(200).send({ data: { invite: data[0] } })
+                })
+                .catch((data) => {
+                    res.status(500).send({message: "Internal Server Error"})
+                })
+        } else {
+            res.status(422).send({ message: "You don't own this list" })
+        }
     }
 })
 
 //Toggle list invite state
-inviteRouter.put('/toggle', (req, res) => {
+inviteRouter.put('/toggle', async (req, res) => {
     const input = req.body
     //Validate Input
     if (!input) {
@@ -46,22 +47,25 @@ inviteRouter.put('/toggle', (req, res) => {
         res.status(422).send({ message: "No invite id was provided in the request" })
     } else if (!Number.isInteger(input.invite_id)) {
         res.status(422).send({ message: "Invite id must be an integer" })
-    }
-    const applicableInvite = await inviteApi.getOne({ id: input.invite_id })
-    //Make sure the user inviting other users owns the list
-    if (applicableInvite.invitee_id === req.user.id) {
-        inviteApi.update({
-            id: input.invite_id
-        }, {
-            rejected: !applicableInvite.rejected
-        })
-            .then((data) => {
-                res.status(200).send({ data: { invite: data[0] } })
-            })
-            .catch((data) => {
-                res.status(500).send({ message: "Internal Server Error" })
-            })
     } else {
-        res.status(422).send({ message: "You are not authorize to reject or accept this invite" })
+        const applicableInvite = await inviteApi.getOne({ id: input.invite_id })
+        //Make sure the user inviting other users owns the list
+        if (applicableInvite.invitee_id === req.user.id) {
+            inviteApi.update({
+                id: input.invite_id
+            }, {
+                rejected: !applicableInvite.rejected
+            })
+                .then((data) => {
+                    res.status(200).send({ data: { invite: data[0] } })
+                })
+                .catch((data) => {
+                    res.status(500).send({ message: "Internal Server Error" })
+                })
+        } else {
+            res.status(422).send({ message: "You are not authorize to reject or accept this invite" })
+        }
     }
 })
+
+module.exports = inviteRouter
